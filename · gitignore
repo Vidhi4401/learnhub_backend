@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables — NEVER commit this
+.env
+
+# Local uploads (files go to Cloudinary in production)
+uploads/
+
+# Windows executables — not needed on Linux/Render
+*.exe
+*.dll
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# NOTE: ml/*.pkl files ARE committed (needed for ML models)
+# If they are >50MB, use Git LFS insteadc:\Users\HP\Downloads\render.yaml
