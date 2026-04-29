@@ -17,3 +17,4 @@ reportlab
 xlsxwriter
 google-generativeai
 yt-dlp
+PyPDF2

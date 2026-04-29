@@ -21,9 +21,9 @@ def setup_initial_data():
 
         # 2. Admin configuration
         admin_data = {
-            "name": "Admin",
-            "email": "admin@gmail.com",
-            "password": "admin1234",
+            "name": "Admin MBIT",
+            "email": "adminmbit@gmail.com",
+            "password": "admin@1234",
             "org_id": org.id
         }
 

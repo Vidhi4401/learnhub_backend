@@ -1,11 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from database import engine, Base
 import models
 import os
 
-# ── Import all routers ──
 from routers import (auth, organization, dashboard, courses, topics, videos,
                      assignments, quizzes, profile, student, chatbot,
                      admin_router, materials, meetings, notifications,
@@ -13,36 +13,45 @@ from routers import (auth, organization, dashboard, courses, topics, videos,
 
 app = FastAPI(title="LearningHub API")
 
-# ── CORS — allow your Vercel frontend + localhost for dev ──
+# ── CORS ──
 ALLOWED_ORIGINS = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://learnhub-frontend-beta.vercel.app",
 ]
 
-# Add Vercel URL from environment variable (set this in Render dashboard after first deploy)
 FRONTEND_URL = os.getenv("FRONTEND_URL", "")
-if FRONTEND_URL:
+if FRONTEND_URL and FRONTEND_URL not in ALLOWED_ORIGINS:
     ALLOWED_ORIGINS.append(FRONTEND_URL)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
-# ── Create upload folders (used as temp storage only — real files go to Cloudinary) ──
+@app.options("/{rest_of_path:path}")
+async def preflight_handler(request: Request, rest_of_path: str):
+    origin = request.headers.get("origin", "")
+    response = JSONResponse(content={}, status_code=200)
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Max-Age"] = "3600"
+    return response
+
 os.makedirs("uploads", exist_ok=True)
-
-# ── Create DB tables ──
 Base.metadata.create_all(bind=engine)
-
-# ── Serve uploaded files (temp/local fallback) ──
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# ── Register all routers ──
 app.include_router(auth.router)
 app.include_router(organization.router)
 app.include_router(dashboard.router)
@@ -67,4 +76,4 @@ def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)

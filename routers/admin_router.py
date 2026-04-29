@@ -755,6 +755,31 @@ def get_admin_analytics(admin=Depends(get_current_admin), db: Session = Depends(
         }
     }
 
+@router.post("/teachers/invite")
+def invite_teacher(
+    name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    admin=Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    existing = db.query(models.User).filter(models.User.email == email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    new_teacher = models.User(
+        name=name,
+        email=email,
+        password_hash=hash_password(password),
+        role="teacher",
+        organization_id=admin.organization_id,
+        status=True
+    )
+    db.add(new_teacher)
+    db.commit()
+    db.refresh(new_teacher)
+    return {"message": "Teacher account created successfully", "id": new_teacher.id}
+
 # ── ADMIN ORGANIZATION & PROFILE ──────────────────────────────────────────────
 def get_full_url(path: str):
     if not path: return None

@@ -7,6 +7,7 @@ def add_new_teachers():
     try:
         # Configuration for new teachers
         new_teachers_data = [
+            {"name": "Teacher one", "email": "teacher1@gmail.com", "password": "teacher123", "org_id": 1},
             {"name": "Teacher Two", "email": "teacher2@gmail.com", "password": "teacher123", "org_id": 1},
             {"name": "Teacher Three", "email": "teacher3@gmail.com", "password": "teacher123", "org_id": 1}
         ]
