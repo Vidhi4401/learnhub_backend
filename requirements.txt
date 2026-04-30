@@ -9,12 +9,14 @@ python-multipart
 python-dotenv
 joblib
 pandas
+numpy
 scikit-learn
 requests
 groq
 cloudinary
 reportlab
 xlsxwriter
+openpyxl
+PyPDF2
 google-generativeai
 yt-dlp
-PyPDF2
